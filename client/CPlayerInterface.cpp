@@ -64,6 +64,10 @@
 #include "../lib/CGameState.h"
 #include "gui/NotificationHandler.h"
 
+#include "widgets/CGarrisonInt.h"
+
+
+
 
 // The macro below is used to mark functions that are called by client when game state changes.
 // They all assume that CPlayerInterface::pim mutex is locked.
@@ -241,7 +245,7 @@ void CPlayerInterface::heroMoved(const TryMoveHero & details, bool verbose)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	waitWhileDialog();
-	if(LOCPLINT != this)
+	if (LOCPLINT != this)
 		return;
 
 	if(settings["session"]["spectate"].Bool() && settings["session"]["spectate-ignore-hero"].Bool())
@@ -250,17 +254,17 @@ void CPlayerInterface::heroMoved(const TryMoveHero & details, bool verbose)
 	const CGHeroInstance * hero = cb->getHero(details.id); //object representing this hero
 	int3 hp = details.start;
 
-	if(!hero)
+	if (!hero)
 	{
 		//AI hero left the visible area (we can't obtain info)
 		//TODO very evil workaround -> retrieve pointer to hero so we could animate it
 		// TODO -> we should not need full CGHeroInstance structure to display animation or it should not be handled by playerint (but by the client itself)
-		const TerrainTile2 & tile = CGI->mh->ttiles[hp.x - 1][hp.y][hp.z];
-		for(auto & elem : tile.objects)
-			if(elem.obj && elem.obj->id == details.id)
+		const TerrainTile2 &tile = CGI->mh->ttiles[hp.x-1][hp.y][hp.z];
+		for (auto & elem : tile.objects)
+			if (elem.obj && elem.obj->id == details.id)
 				hero = dynamic_cast<const CGHeroInstance *>(elem.obj);
 
-		if(!hero) //still nothing...
+		if (!hero) //still nothing...
 			return;
 	}
 
@@ -269,21 +273,21 @@ void CPlayerInterface::heroMoved(const TryMoveHero & details, bool verbose)
 		&& adventureInt->terrain.currentPath					//in case if movement has been canceled in the meantime and path was already erased
 		&& adventureInt->terrain.currentPath->nodes.size() == 3;//FIXME should be 2 but works nevertheless...
 
-	if(makingTurn && hero->tempOwner == playerID) //we are moving our hero - we may need to update assigned path
+	if (makingTurn  &&  hero->tempOwner == playerID) //we are moving our hero - we may need to update assigned path
 	{
 		updateAmbientSounds();
 		//We may need to change music - select new track, music handler will change it if needed
 		CCS->musich->playMusicFromSet("terrain", LOCPLINT->cb->getTile(hero->visitablePos())->terType, true);
 
-		if(details.result == TryMoveHero::TELEPORTATION)
+		if (details.result == TryMoveHero::TELEPORTATION)
 		{
-			if(adventureInt->terrain.currentPath)
+			if (adventureInt->terrain.currentPath)
 			{
 				assert(adventureInt->terrain.currentPath->nodes.size() >= 2);
 				std::vector<CGPathNode>::const_iterator nodesIt = adventureInt->terrain.currentPath->nodes.end() - 1;
 
-				if((nodesIt)->coord == CGHeroInstance::convertPosition(details.start, false)
-					&& (nodesIt - 1)->coord == CGHeroInstance::convertPosition(details.end, false))
+				if ((nodesIt)->coord == CGHeroInstance::convertPosition(details.start, false)
+					&& (nodesIt-1)->coord == CGHeroInstance::convertPosition(details.end, false))
 				{
 					//path was between entrance and exit of teleport -> OK, erase node as usual
 					removeLastNodeFromPath(hero);
@@ -302,14 +306,14 @@ void CPlayerInterface::heroMoved(const TryMoveHero & details, bool verbose)
 					//TODO: smooth disappear / appear effect
 		}
 
-		if(hero->pos != details.end //hero didn't change tile but visit succeeded
+		if (hero->pos != details.end //hero didn't change tile but visit succeeded
 			|| directlyAttackingCreature) // or creature was attacked from endangering tile.
 		{
 			eraseCurrentPathOf(hero, false);
 		}
-		else if(adventureInt->terrain.currentPath && hero->pos == details.end) //&& hero is moving
+		else if (adventureInt->terrain.currentPath  &&  hero->pos == details.end) //&& hero is moving
 		{
-			if(details.start != details.end) //so we don't touch path when revisiting with spacebar
+			if (details.start != details.end) //so we don't touch path when revisiting with spacebar
 				removeLastNodeFromPath(hero);
 		}
 	}
@@ -329,12 +333,12 @@ void CPlayerInterface::heroMoved(const TryMoveHero & details, bool verbose)
 		if(!settings["session"]["spectate-hero-speed"].isNull())
 			speed = static_cast<ui32>(settings["session"]["spectate-hero-speed"].Integer());
 	}
-	else if(makingTurn) // our turn, our hero moves
+	else if (makingTurn) // our turn, our hero moves
 		speed = static_cast<ui32>(settings["adventure"]["heroSpeed"].Float());
 	else
 		speed = static_cast<ui32>(settings["adventure"]["enemySpeed"].Float());
 
-	if(speed == 0)
+	if (speed == 0)
 	{
 		//FIXME: is this a proper solution?
 		CGI->mh->hideObject(hero);
@@ -568,11 +572,14 @@ void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, 
 
 void CPlayerInterface::heroInGarrisonChange(const CGTownInstance *town)
 {
+	logGlobal->trace("heroInGarrisonChange in CPlayerInterface::heroInGarrisonChange");
+	int flag = 0;
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	updateInfo(town);
 
 	if (town->garrisonHero) //wandering hero moved to the garrison
 	{
+		logGlobal->trace("if 1");
 		CGI->mh->hideObject(town->garrisonHero);
 		if (town->garrisonHero->tempOwner == playerID && vstd::contains(wanderingHeroes,town->garrisonHero)) // our hero
 			wanderingHeroes -= town->garrisonHero;
@@ -580,21 +587,79 @@ void CPlayerInterface::heroInGarrisonChange(const CGTownInstance *town)
 
 	if (town->visitingHero) //hero leaves garrison
 	{
+                flag = 18;
+		logGlobal->trace("if 2");
+//		std::cout << "HEREHEREHERE" << '\n';
+//		std::cout << typeid(town->visitingHero).name() << '\n';
+//                std::cout << town->visitingHero->mana << '\n';
+//		const ConstTransitivePtr<CGHeroInstance> &h = town->visitingHero;
+//		for(auto stack : h->stacks){
+//			std::cout << typeid(stack).name() << '\n';
+//			std::cout << stack.first << '\n';
+//			std::cout << stack.second->count << '\n';
+//		}
+
+
+
 		CGI->mh->printObject(town->visitingHero);
 		if (town->visitingHero->tempOwner == playerID && !vstd::contains(wanderingHeroes,town->visitingHero)) // our hero
 			wanderingHeroes.push_back(town->visitingHero);
+
+
 	}
+
+
 	adventureInt->heroList.update();
 	adventureInt->updateNextHero(nullptr);
 
 	if(castleInt)
 	{
+		logGlobal->trace("if 3");
 		castleInt->garr->selectSlot(nullptr);
 		castleInt->garr->setArmy(town->getUpperArmy(), 0);
 		castleInt->garr->setArmy(town->visitingHero, 1);
 		castleInt->garr->recreateSlots();
 		castleInt->heroes->update();
 	}
+
+//        std::cout << typeid(castleInt->garr).name() << '\n';
+//        std::cout << typeid(castleInt->garr->garOffset).name() << '\n';
+//        //std::cout << typeid(castleInt->garr->armedObjs).name() << '\n';
+//        std::cout << castleInt->garr->armedObjs << '\n';
+
+
+        //std::cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << '\n';
+        //std::cout << castleInt->garr->armedObjs[2] << '\n';
+
+
+        //castleInt->garr->theSome();
+        //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << '\n';
+        //std::cout << castleInt->garr->getEmptySlot() << '\n';
+
+
+        if(flag == 18)
+        {
+               std::cout << flag << '\n';
+               const ConstTransitivePtr<CGHeroInstance> &h = town->visitingHero;
+               const CArmedInstance *army = static_cast<const CArmedInstance*>(town->visitingHero);
+//               auto i = army->Slots().begin();
+               for(auto stack : h->stacks){
+                    std::cout << typeid(stack).name() << '\n';
+                    std::cout << stack.first << '\n';
+                    std::cout << stack.second->count << '\n';
+
+                    SlotID pos = army->getSlotFor(stack.second->type);
+
+                    SlotID freeSlot = castleInt->garr->getEmptySlot();
+
+                    std::cout << pos << '\n';
+                    std::cout << freeSlot << '\n';
+
+                    LOCPLINT->cb->splitStack(army, town->getUpperArmy(), pos, pos, (stack.second->count - 1));
+               }
+        }
+
+
 	for (auto isa : GH.listInt)
 	{
 		CKingdomInterface *ki = dynamic_cast<CKingdomInterface*>(isa.get());
@@ -1558,6 +1623,7 @@ void CPlayerInterface::initializeHeroTownList()
 void CPlayerInterface::showRecruitmentDialog(const CGDwelling *dwelling, const CArmedInstance *dst, int level)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
+	std::cout << "CPlayerInterface::showRecruitmentDialog" << std::endl;
 	waitWhileDialog();
 	auto recruitCb = [=](CreatureID id, int count)
 	{

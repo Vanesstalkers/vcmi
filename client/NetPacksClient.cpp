@@ -494,6 +494,7 @@ void SetAvailableCreatures::applyCl(CClient *cl)
 
 void SetHeroesInTown::applyCl(CClient *cl)
 {
+	logGlobal->trace("SetHeroesInTown in NetPacksClient.cpp");
 	CGTownInstance *t = GS(cl)->getTown(tid);
 	CGHeroInstance *hGarr  = GS(cl)->getHero(this->garrison);
 	CGHeroInstance *hVisit = GS(cl)->getHero(this->visiting);

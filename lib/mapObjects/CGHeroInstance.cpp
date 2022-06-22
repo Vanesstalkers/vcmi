@@ -370,7 +370,8 @@ void CGHeroInstance::initArmy(CRandomGenerator & rand, IArmyDescriptor * dst)
 	{
 		auto & stack = type->initialArmy[stackNo];
 
-		int count = rand.nextInt(stack.minAmount, stack.maxAmount);
+		// int count = rand.nextInt(stack.minAmount, stack.maxAmount); 1 slot  1 creature 
+		int count = 1;
 
 		const CCreature * creature = stack.creature.toCreature();
 

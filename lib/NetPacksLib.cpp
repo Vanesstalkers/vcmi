@@ -611,6 +611,7 @@ DLL_LINKAGE void SetAvailableCreatures::applyGs(CGameState *gs)
 
 DLL_LINKAGE void SetHeroesInTown::applyGs(CGameState *gs)
 {
+	logGlobal->trace("SetHeroesInTown in NetPacksLib.cpp");
 	CGTownInstance *t = gs->getTown(tid);
 
 	CGHeroInstance *v  = gs->getHero(visiting),

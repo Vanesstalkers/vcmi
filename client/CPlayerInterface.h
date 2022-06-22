@@ -15,6 +15,9 @@
 #include "../lib/NetPacksBase.h"
 #include "gui/CIntObject.h"
 
+#include<iostream>
+
+
 #ifdef __GNUC__
 #define sprintf_s snprintf
 #endif

@@ -73,6 +73,8 @@ void CCallback::recruitCreatures(const CGDwelling * obj, const CArmedInstance * 
 	sendRequest(&pack);
 }
 
+
+
 bool CCallback::dismissCreature(const CArmedInstance *obj, SlotID stackPos)
 {
 	if((player && obj->tempOwner != player) || (obj->stacksCount()<2  && obj->needsLastStack()))
@@ -221,6 +223,7 @@ void CCallback::swapGarrisonHero( const CGTownInstance *town )
 	if(town->tempOwner == *player
 	   || (town->garrisonHero && town->garrisonHero->tempOwner == *player ))
 	{
+		logGlobal->trace("GarrisonHeroSwap 1");
 		GarrisonHeroSwap pack(town->id);
 		sendRequest(&pack);
 	}

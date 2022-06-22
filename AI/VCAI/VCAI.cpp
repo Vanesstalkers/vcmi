@@ -1225,6 +1225,7 @@ void VCAI::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance * ot
 
 void VCAI::recruitCreatures(const CGDwelling * d, const CArmedInstance * recruiter)
 {
+	std::cout << "void VCAI::recruitCreatures" << std::endl;
 	//now used only for visited dwellings / towns, not BuyArmy goal
 	for(int i = 0; i < d->creatures.size(); i++)
 	{

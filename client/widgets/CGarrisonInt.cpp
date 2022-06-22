@@ -425,6 +425,7 @@ CGarrisonSlot::CGarrisonSlot(CGarrisonInt * Owner, int x, int y, SlotID IID, CGa
 void CGarrisonSlot::splitIntoParts(CGarrisonSlot::EGarrisonType type, int amount)
 {
 	auto empty = owner->getEmptySlot(type);
+	std::cout << "OOOOOOOOOOOOOOOOOOO" << '\n';
 
 	if(empty == SlotID())
 		return;
@@ -721,6 +722,13 @@ SlotID CGarrisonInt::getEmptySlot(CGarrisonSlot::EGarrisonType type) const
 	return armedObjs[type] ? armedObjs[type]->getFreeSlot() : SlotID();
 }
 
+
+SlotID CGarrisonInt::getEmptySlot() const
+{
+	return armedObjs[0] ? armedObjs[0]->getFreeSlot() : SlotID();
+}
+
+
 bool CGarrisonInt::hasEmptySlot(CGarrisonSlot::EGarrisonType type) const
 {
 	return getEmptySlot(type) != SlotID();
@@ -730,4 +738,15 @@ void CGarrisonInt::setArmy(const CArmedInstance * army, bool bottomGarrison)
 {
 	owned[bottomGarrison] =  army ? (army->tempOwner == LOCPLINT->playerID || army->tempOwner == PlayerColor::UNFLAGGABLE) : false;
 	armedObjs[bottomGarrison] = army;
+}
+
+
+void CGarrisonInt::theSome()
+{
+	std::cout << this->highlighted << '\n';
+	std::cout << typeid(this->highlighted).name() << '\n';
+	std::cout <<  typeid(this->highlighted->viewInfo()).name() << '\n';
+	std::cout << typeid(this->highlighted->upg).name() << '\n';
+	std::cout << this->inSplittingMode << '\n';
+	std::cout << this->availableSlots[0] << '\n';
 }

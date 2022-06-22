@@ -76,6 +76,11 @@ class CGarrisonInt :public CIntObject
 	bool checkSelected(const CGarrisonSlot * selected, TQuantity min = 0) const;
 
 public:
+
+
+        void theSome();
+
+
 	int interx;  ///< Space between slots
 	Point garOffset;  ///< Offset between garrisons (not used if only one hero)
 	std::vector<std::shared_ptr<CButton>> splitButtons;  ///< May be empty if no buttons
@@ -95,6 +100,7 @@ public:
 
 	bool hasEmptySlot(CGarrisonSlot::EGarrisonType type) const;
 	SlotID getEmptySlot(CGarrisonSlot::EGarrisonType type) const;
+        SlotID getEmptySlot() const;
 
 	const CArmedInstance * armedObjs[2];  ///< [0] is upper, [1] is down
 
@@ -110,6 +116,7 @@ public:
 	void bulkMergeStacks(const CGarrisonSlot * selected); // Gather all creatures of selected type to the selected slot from other hero/garrison slots
 	void bulkSplitStack(const CGarrisonSlot * selected); // Used to separate one-creature troops from main stack
 	void bulkSmartSplitStack(const CGarrisonSlot * selected);
+
 
 	/// Constructor
 	/// @param x, y Position

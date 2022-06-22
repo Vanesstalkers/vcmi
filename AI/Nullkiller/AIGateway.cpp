@@ -996,6 +996,7 @@ void AIGateway::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance
 
 void AIGateway::recruitCreatures(const CGDwelling * d, const CArmedInstance * recruiter)
 {
+	std::cout << "void AIGateway::recruitCreatures" << std::endl;
 	//now used only for visited dwellings / towns, not BuyArmy goal
 	for(int i = 0; i < d->creatures.size(); i++)
 	{

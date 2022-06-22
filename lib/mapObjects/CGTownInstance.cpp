@@ -281,6 +281,8 @@ void CGDwelling::updateGuards() const
 	//TODO: store custom guard config and use it
 	//TODO: store boolean flag for guards
 
+	logGlobal->error("CGDwelling::updateGuards");
+
 	bool guarded = false;
 	//default condition - creatures are of level 5 or higher
 	for (auto creatureEntry : creatures)
@@ -966,6 +968,9 @@ bool CGTownInstance::hasBuiltInOldWay(ETownType::ETownType type, BuildingID bid)
 
 void CGTownInstance::newTurn(CRandomGenerator & rand) const
 {
+
+	logGlobal->error("CGDwelling::updateGuards");
+
 	if (cb->getDate(Date::DAY_OF_WEEK) == 1) //reset on new week
 	{
 		//give resources if there's a Mystic Pond

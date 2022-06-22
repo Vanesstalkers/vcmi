@@ -68,6 +68,9 @@ class CRecruitmentWindow : public CStatusbarWindow
 	std::vector<std::shared_ptr<CCreatureCard>> cards;
 
 	std::shared_ptr<CSlider> slider;
+
+	std::shared_ptr<CButton> blahButton;
+
 	std::shared_ptr<CButton> maxButton;
 	std::shared_ptr<CButton> buyButton;
 	std::shared_ptr<CButton> cancelButton;
@@ -81,6 +84,7 @@ class CRecruitmentWindow : public CStatusbarWindow
 
 	void select(std::shared_ptr<CCreatureCard> card);
 	void buy();
+	void buh();
 	void sliderMoved(int to);
 
 	void showAll(SDL_Surface * to) override;

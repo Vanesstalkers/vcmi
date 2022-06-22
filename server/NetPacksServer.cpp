@@ -157,8 +157,10 @@ bool BuildStructure::applyGh(CGameHandler * gh)
 
 bool RecruitCreatures::applyGh(CGameHandler * gh)
 {
+	std::cout << "bool RecruitCreatures::applyGh" << std::endl;
 	return gh->recruitCreatures(tid, dst, crid, amount, level);
 }
+
 
 bool UpgradeCreature::applyGh(CGameHandler * gh)
 {
@@ -168,6 +170,7 @@ bool UpgradeCreature::applyGh(CGameHandler * gh)
 
 bool GarrisonHeroSwap::applyGh(CGameHandler * gh)
 {
+	logGlobal->trace("GarrisonHeroSwap 2");
 	const CGTownInstance * town = gh->getTown(tid);
 	if(!isPlayerOwns(gh, tid) && !(town->garrisonHero && isPlayerOwns(gh, town->garrisonHero->id)))
 		throwNotAllowedAction(); //neither town nor garrisoned hero (if present) is ours

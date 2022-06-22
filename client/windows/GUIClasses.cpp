@@ -148,6 +148,7 @@ void CRecruitmentWindow::select(std::shared_ptr<CCreatureCard> card)
 	}
 }
 
+
 void CRecruitmentWindow::buy()
 {
 	CreatureID crid =  selected->creature->idNumber;
@@ -174,6 +175,19 @@ void CRecruitmentWindow::buy()
 	if(level >= 0)
 		close();
 }
+
+
+void CRecruitmentWindow::buh()
+{
+	CreatureID crid =  selected->creature->idNumber;
+	int theValue = 333;
+
+	onRecruit(crid, theValue);
+	
+	close();
+}
+
+
 
 void CRecruitmentWindow::showAll(SDL_Surface * to)
 {
@@ -209,6 +223,7 @@ CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, c
 
 	slider = std::make_shared<CSlider>(Point(176,279),135,std::bind(&CRecruitmentWindow::sliderMoved,this, _1),0,0,0,true);
 
+        blahButton = std::make_shared<CButton>(Point(46, 313), "IRCBTNS.DEF", CGI->generaltexth->zelp[553], std::bind(&CRecruitmentWindow::buh, this), SDLK_m);
 	maxButton = std::make_shared<CButton>(Point(134, 313), "IRCBTNS.DEF", CGI->generaltexth->zelp[553], std::bind(&CSlider::moveToMax, slider), SDLK_m);
 	buyButton = std::make_shared<CButton>(Point(212, 313), "IBY6432.DEF", CGI->generaltexth->zelp[554], std::bind(&CRecruitmentWindow::buy, this), SDLK_RETURN);
 	cancelButton = std::make_shared<CButton>(Point(290, 313), "ICN6432.DEF", CGI->generaltexth->zelp[555], std::bind(&CRecruitmentWindow::close, this), SDLK_ESCAPE);
@@ -222,7 +237,7 @@ CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, c
 
 	availableTitle = std::make_shared<CLabel>(205, 233, FONT_SMALL, CENTER, Colors::WHITE, CGI->generaltexth->allTexts[465]);
 	toRecruitTitle = std::make_shared<CLabel>(279, 233, FONT_SMALL, CENTER, Colors::WHITE, CGI->generaltexth->allTexts[16]);
-
+        std::cout << "CRecruitmentWindow::CRecruitmentWindow" << std::endl;
 	availableCreaturesChanged();
 }
 

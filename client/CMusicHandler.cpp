@@ -188,6 +188,9 @@ int CSoundHandler::playSound(soundBase::soundID soundID, int repeats)
 
 int CSoundHandler::playSound(std::string sound, int repeats, bool cache)
 {
+	// turn of all sounds (i think)
+	logGlobal->trace("return -1 instead sound");
+	return -1;
 	if (!initialized || sound.empty())
 		return -1;
 

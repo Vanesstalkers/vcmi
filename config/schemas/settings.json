@@ -302,7 +302,7 @@
 						},
 						"threshold" : {
 							"$ref" : "#/definitions/logLevelEnum",
-							"default" : "info"
+							"default" : "debug"
 						},
 						"coloredOutputEnabled" : {
 							"type" : "boolean",
