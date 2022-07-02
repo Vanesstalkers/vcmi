@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CBank.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
@@ -49,7 +49,15 @@ void CBank::initObj(CRandomGenerator & rand)
 std::string CBank::getHoverText(PlayerColor player) const
 {
 	// TODO: record visited players
-	return getObjectName() + " " + visitedTxt(bc == nullptr);
+
+    TQuantity orgCount = 0;
+	for (auto & slot : bc->creatures)
+	{
+		orgCount = slot.count;
+		logGlobal->error("SLOT II COUNT: " +  boost::lexical_cast<std::string>(slot.count));
+	}
+
+	return getObjectName() + " " + visitedTxt(bc == nullptr) + " " + boost::lexical_cast<std::string>(orgCount);
 }
 
 void CBank::setConfig(const BankConfig & config)
@@ -320,7 +328,7 @@ void CBank::doVisit(const CGHeroInstance * hero) const
 		for (auto & slot : bc->creatures)
 		{
 			orgCount = slot.count;
-			logGlobal->error("SLOT COUNT: " +  boost::lexical_cast<std::string>(slot.count));
+			logGlobal->error("SLOT V COUNT: " +  boost::lexical_cast<std::string>(slot.count));
             if(pinfo->human && slot.count > 0)
 			{
 			    slot.count = slot.count > stCount ? stCount : slot.count;
@@ -368,7 +376,8 @@ void CBank::blockingDialogAnswered(const CGHeroInstance *hero, ui32 answer) cons
 {
 	if (answer)
 	{
-		if (bc) // not looted bank
+		TSlots theStacks = this->stacks;
+		if (bc && theStacks.size()) // not looted bank
 			cb->startBattleI(hero, this, true);
 		else
 			doVisit(hero);

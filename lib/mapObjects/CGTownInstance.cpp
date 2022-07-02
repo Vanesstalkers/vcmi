@@ -325,6 +325,7 @@ void CGDwelling::updateGuards() const
 
 void CGDwelling::heroAcceptsCreatures( const CGHeroInstance *h) const
 {
+	logGlobal->error("CGDwelling::heroAcceptsCreatures");
 	CreatureID crid = creatures[0].second[0];
 	CCreature *crs = VLC->creh->objects[crid];
 	TQuantity count = creatures[0].first;
@@ -1290,7 +1291,8 @@ void CGTownInstance::recreateBuildingsBonuses()
 	for(auto b : bl)
 		removeBonus(b);
 
-	for(const auto & bid : builtBuildings)
+	auto owner = this->getOwner();
+	for(const auto bid : builtBuildings)
 	{
 		if(vstd::contains(overriddenBuildings, bid)) //tricky! -> checks tavern only if no bratherhood of sword
 			continue;
@@ -1590,13 +1592,13 @@ void CGTownInstance::serializeJsonOptions(JsonSerializeFormat & handler)
 
 			boost::logic::tribool hasFort(false);
 
-			for(const BuildingID & id : forbiddenBuildings)
+			for(const BuildingID id : forbiddenBuildings)
 			{
 				buildingsLIC.none.insert(id);
 				customBuildings = true;
 			}
 
-			for(const BuildingID & id : builtBuildings)
+			for(const BuildingID id : builtBuildings)
 			{
 				if(id == BuildingID::DEFAULT)
 					continue;

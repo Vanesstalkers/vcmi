@@ -710,7 +710,6 @@ DLL_LINKAGE void NewObject::applyGs(CGameState *gs)
 
 		const int3 previousXAxisTile = int3(pos.x - 1, pos.y, pos.z);
 		assert(gs->isInTheMap(previousXAxisTile) && (testObject.visitablePos() == previousXAxisTile));
-		UNUSED(previousXAxisTile);
 	}
 	else
 	{
@@ -925,6 +924,8 @@ DLL_LINKAGE void InsertNewStack::applyGs(CGameState *gs)
 
 DLL_LINKAGE void RebalanceStacks::applyGs(CGameState * gs)
 {
+	logGlobal->error("RebalanceStacks::applyGs");	
+
 	auto srcObj = gs->getArmyInstance(srcArmy);
 	if(!srcObj)
 		logNetwork->error("[CRITICAL] RebalanceStacks: invalid army object %d, possible game state corruption.", srcArmy.getNum());
@@ -989,6 +990,25 @@ DLL_LINKAGE void RebalanceStacks::applyGs(CGameState * gs)
 		{
 			CStackInstance *stackDetached = src.army->detachStack(src.slot);
 			dst.army->putStack(dst.slot, stackDetached);
+			//CGHeroInstance *h = gs->getHero(dstArmy);
+			//gs->map->removeBlockVisTiles(h,true);
+			//logGlobal->error("Player wants to move hero from %s", h->pos.toString());
+
+	        ////const int3 hmpos = CGHeroInstance::convertPosition(h->pos, false);
+			//int3 endPos;
+			//endPos = h->pos;
+			//endPos.x = h->pos.x+3;
+			////endPos.y = h->pos.y+2;
+			//logGlobal->error("Player wants to move hero to %s", endPos.toString());
+			//h->pos = endPos;
+			//gs->map->addBlockVisTiles(h);
+			//src.army->changeStackCount(src.slot, -count+9);
+			//src.army->putStack(src.slot, stackDetached);
+			//dst.army->putStack(dst.slot, stackDetached); 
+			
+			//src.army->changeStackCount(src.slot, -3);  
+			//src.army->eraseStack(src.slot);  			
+			//dst.army->changeStackCount(dst.slot, count-count+9);
 		}
 	}
 	else

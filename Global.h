@@ -132,6 +132,7 @@ static_assert(sizeof(bool) == 1, "Bool needs to be 1 byte in size.");
 
 #define _USE_MATH_DEFINES
 
+
 #include <cstdio>
 #include <stdio.h>
 
@@ -272,6 +273,9 @@ template<typename T, size_t N> char (&_ArrayCountObj(const T (&)[N]))[N];
 /* VCMI standard library */
 /* ---------------------------------------------------------------------------- */
 #include <vstd/CLoggerBase.h>
+
+
+
 
 void inline handleException()
 {

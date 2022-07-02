@@ -411,7 +411,7 @@ void CCreatureSet::setFormation(bool tight)
 
 void CCreatureSet::setStackCount(SlotID slot, TQuantity count)
 {
-	assert(hasStackAtSlot(slot));
+	//assert(hasStackAtSlot(slot));
 	assert(stacks[slot]->count + count > 0);
 	if (VLC->modh->modules.STACK_EXP && count > stacks[slot]->count)
 		stacks[slot]->experience = static_cast<TExpType>(stacks[slot]->experience * (count / static_cast<double>(stacks[slot]->count)));

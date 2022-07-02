@@ -163,6 +163,7 @@ std::string CGCreature::getHoverText(const CGHeroInstance * hero) const
 
 void CGCreature::onHeroVisit( const CGHeroInstance * h ) const
 {
+	logGlobal->error("CGCreature::onHeroVisit");
 	int action = takenAction(h);
 	switch( action ) //decide what we do...
 	{
@@ -190,11 +191,20 @@ void CGCreature::onHeroVisit( const CGHeroInstance * h ) const
 			//ask if player agrees to pay gold
 			BlockingDialog ynd(true,false);
 			ynd.player = h->tempOwner;
-			std::string tmp = VLC->generaltexth->advobtxt[90];
-			boost::algorithm::replace_first(tmp,"%d",boost::lexical_cast<std::string>(getStackCount(SlotID(0))));
-			boost::algorithm::replace_first(tmp,"%d",boost::lexical_cast<std::string>(action));
-			boost::algorithm::replace_first(tmp,"%s",VLC->creh->objects[subID]->namePl);
-			ynd.text << tmp;
+
+	        const PlayerState * pinfo = cb->getPlayerState(ynd.player, false);
+			if (pinfo->human)
+			{
+				logGlobal->error("HUMAN... AGAIN...");
+				const CArmedInstance * army = static_cast<const CArmedInstance*>(h);
+			            
+			    std::string tmp = VLC->generaltexth->advobtxt[90];
+			    //boost::algorithm::replace_first(tmp,"%d",boost::lexical_cast<std::string>(getStackCount(SlotID(0))));
+				boost::algorithm::replace_first(tmp,"%d",boost::lexical_cast<std::string>((army->getFreeSlots()).size()));
+				boost::algorithm::replace_first(tmp,"%d",boost::lexical_cast<std::string>(action));
+				boost::algorithm::replace_first(tmp,"%s",VLC->creh->objects[subID]->namePl);				
+				ynd.text << tmp;
+			}
 			cb->showBlockingDialog(&ynd);
 			break;
 		}
@@ -281,6 +291,7 @@ void CGCreature::setPropertyDer(ui8 what, ui32 val)
 int CGCreature::takenAction(const CGHeroInstance *h, bool allowJoin) const
 {
 	//calculate relative strength of hero and creatures armies
+	logGlobal->error("CGCreature::takenAction");
 	double relStrength = double(h->getTotalStrength()) / getArmyStrength();
 
 	int powerFactor;
@@ -334,10 +345,27 @@ int CGCreature::takenAction(const CGHeroInstance *h, bool allowJoin) const
 	if (allowJoin)
 	{
 		if(diplomacy + sympathy + 1 >= character)
+		{
 			return JOIN_FOR_FREE;
+		}
+		else
+		{
+			if(diplomacy * 2  +  sympathy  +  1 >= character)
+			{
+				PlayerColor thePlayer = cb->gameState()->currentPlayer;
+				const PlayerState * pinfo = cb->getPlayerState(thePlayer, false);
 
-		else if(diplomacy * 2  +  sympathy  +  1 >= character)
-			return VLC->creh->objects[subID]->cost[6] * getStackCount(SlotID(0)); //join for gold
+				if(!pinfo->human)
+				{
+					return VLC->creh->objects[subID]->cost[6] * getStackCount(SlotID(0)); //join for gold
+				}
+				else
+				{
+					const CArmedInstance * army = static_cast<const CArmedInstance*>(h);
+					return VLC->creh->objects[subID]->cost[6] * (army->getFreeSlots().size()); //join for gold
+				}
+			}
+		}
 	}
 
 	//we are still here - creatures have not joined hero, flee or fight
@@ -365,6 +393,7 @@ void CGCreature::fleeDecision(const CGHeroInstance *h, ui32 pursue) const
 
 void CGCreature::joinDecision(const CGHeroInstance *h, int cost, ui32 accept) const
 {
+	logGlobal->error("CGCreature::joinDecision");
 	if(!accept)
 	{
 		if(takenAction(h,false) == FLEE)
@@ -502,6 +531,7 @@ void CGCreature::battleFinished(const CGHeroInstance *hero, const BattleResult &
 
 void CGCreature::blockingDialogAnswered(const CGHeroInstance *hero, ui32 answer) const
 {
+	logGlobal->error("CGCreature::blockingDialogAnswered");
 	auto action = takenAction(hero);
 	if(!refusedJoining && action >= JOIN_FOR_FREE) //higher means price
 		joinDecision(hero, action, answer);
@@ -838,14 +868,14 @@ std::string CGResource::getHoverText(PlayerColor player) const
 
 CGResource::CGResource()
 {
-	amount = CGResource::RANDOM_AMOUNT;
+	amount = 0;
 }
 
 void CGResource::initObj(CRandomGenerator & rand)
 {
 	blockVisit = true;
 
-	if(amount == CGResource::RANDOM_AMOUNT)
+	if(!amount)
 	{
 		switch(subID)
 		{
@@ -864,6 +894,7 @@ void CGResource::initObj(CRandomGenerator & rand)
 
 void CGResource::onHeroVisit( const CGHeroInstance * h ) const
 {
+	logGlobal->error("CGResource::onHeroVisitII");
 	if(stacksCount())
 	{
 		if(message.size())
