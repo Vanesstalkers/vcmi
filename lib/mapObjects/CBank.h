@@ -18,6 +18,7 @@ class CBankInstanceConstructor;
 class DLL_LINKAGE CBank : public CArmedInstance
 {
 	std::unique_ptr<BankConfig> bc;
+	ui32 stacksize;
 	ui32 daycounter;
 	ui32 resetDuration;
 

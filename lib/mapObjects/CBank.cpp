@@ -31,6 +31,7 @@ static std::string & visitedTxt(const bool visited)
 
 CBank::CBank()
 {
+	stacksize = 0;
 	daycounter = 0;
 	resetDuration = 0;
 }
@@ -41,6 +42,7 @@ CBank::~CBank()
 
 void CBank::initObj(CRandomGenerator & rand)
 {
+	stacksize = 0;
 	daycounter = 0;
 	resetDuration = 0;
 	VLC->objtypeh->getHandlerFor(ID, subID)->configureObject(this, rand);
@@ -57,7 +59,7 @@ std::string CBank::getHoverText(PlayerColor player) const
 		logGlobal->error("SLOT II COUNT: " +  boost::lexical_cast<std::string>(slot.count));
 	}
 
-	return getObjectName() + " " + visitedTxt(bc == nullptr) + " " + boost::lexical_cast<std::string>(orgCount);
+	return getObjectName() + " " + visitedTxt(bc == nullptr) + " " + boost::lexical_cast<std::string>(stacksize);
 }
 
 void CBank::setConfig(const BankConfig & config)
@@ -83,6 +85,9 @@ void CBank::setPropertyDer (ui8 what, ui32 val)
 			break;
 		case ObjProperty::BANK_CLEAR:
 			bc.reset();
+			break;
+		case ObjProperty::BANK_STACKSIZE:
+			stacksize = val;
 			break;
 	}
 }
@@ -336,6 +341,7 @@ void CBank::doVisit(const CGHeroInstance * hero) const
 			ourArmy.addToSlot(ourArmy.getSlotFor(slot.type->idNumber), slot.type->idNumber, slot.count);
             slot.count = orgCount - slot.count;
 			orgCount = slot.count;
+			cb->setObjProperty(id, ObjProperty::BANK_STACKSIZE, orgCount);
 		}
 
 		for (auto & elem : ourArmy.Slots())
