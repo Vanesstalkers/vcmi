@@ -157,6 +157,7 @@ DLL_LINKAGE void SetMana::applyGs(CGameState *gs)
 	else
 		hero->mana += val;
 
+    hero->firstCast = firstCast;
 	vstd::amax(hero->mana, 0); //not less than 0
 }
 

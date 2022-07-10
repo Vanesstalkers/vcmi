@@ -2229,6 +2229,12 @@ std::list<PlayerColor> CGameHandler::generatePlayerTurnOrder() const
 
 void CGameHandler::setupBattle(int3 tile, const CArmedInstance *armies[2], const CGHeroInstance *heroes[2], bool creatureBank, const CGTownInstance *town)
 {
+	logGlobal->error("CGameHandler::setupBattle");
+	if (creatureBank)
+	{
+		logGlobal->error("creatureBank");
+	}
+	
 	battleResult.set(nullptr);
 
 	const auto t = getTile(tile);
@@ -2720,8 +2726,31 @@ void CGameHandler::startBattlePrimary(const CArmedInstance *army1, const CArmedI
 								const CGHeroInstance *hero1, const CGHeroInstance *hero2, bool creatureBank,
 								const CGTownInstance *town) //use hero=nullptr for no hero
 {
+	logGlobal->error("CGameHandler::startBattlePrimary");
 	engageIntoBattle(army1->tempOwner);
 	engageIntoBattle(army2->tempOwner);
+
+    if(hero1)
+	{
+        SetMana sm;
+	    sm.absolute = false;
+	    sm.hid = hero1->id;
+	    sm.val = 0;
+	    sm.firstCast = true;	
+
+	    sendAndApply(&sm);
+	}
+
+    if(hero2)
+	{
+        SetMana sm1;
+	    sm1.absolute = false;
+	    sm1.hid = hero2->id;
+	    sm1.val = 0;
+	    sm1.firstCast = true;
+
+	    sendAndApply(&sm1);
+	}
 
 	static const CArmedInstance *armies[2];
 	armies[0] = army1;
@@ -6498,7 +6527,7 @@ bool CGameHandler::moveStack(const StackLocation &src, const StackLocation &dst,
 	//PlayerColor thePlayer = gs->currentPlayer;
 	//const PlayerState * pinfo = getPlayerState(thePlayer, false);
 
-    const CArmedInstance *Army = dst.army;    
+    const CArmedInstance *Army = dst.army;
     auto hero = dynamic_ptr_cast<CGHeroInstance> (Army);
 	
 	if(hero)
@@ -6551,6 +6580,7 @@ bool CGameHandler::moveStack(const StackLocation &src, const StackLocation &dst,
 
 bool CGameHandler::swapStacks(const StackLocation & sl1, const StackLocation & sl2)
 {
+	logGlobal->error("CGameHandler::swapStacks");
 	if(!sl1.army->hasStackAtSlot(sl1.slot))
 	{
 		return moveStack(sl2, sl1);
@@ -6561,6 +6591,19 @@ bool CGameHandler::swapStacks(const StackLocation & sl1, const StackLocation & s
 	}
 	else
 	{
+
+        const CArmedInstance *Army = sl1.army; 
+        auto hero = dynamic_ptr_cast<CGHeroInstance> (Army);
+
+		const CArmedInstance *Army1 = sl2.army;
+		auto hero1 = dynamic_ptr_cast<CGHeroInstance> (Army1);
+
+		if((hero || hero1) && (sl1.army->getStackCount(sl1.slot) > 1 || sl2.army->getStackCount(sl2.slot)))
+		{
+			logGlobal->error("No fucking way!!!");
+			return false;
+		}
+
 		SwapStacks ss;
 		ss.srcArmy = sl1.army->id;
 		ss.dstArmy = sl2.army->id;

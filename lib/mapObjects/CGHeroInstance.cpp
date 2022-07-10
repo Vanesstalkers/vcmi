@@ -346,6 +346,7 @@ void CGHeroInstance::initHero(CRandomGenerator & rand)
 
 	if (mana < 0)
 		mana = manaLimit();
+
 }
 
 void CGHeroInstance::initArmy(CRandomGenerator & rand, IArmyDescriptor * dst)
@@ -722,14 +723,27 @@ void CGHeroInstance::getCastDescription(const spells::Spell * spell, const std::
 		attacked.at(0)->addNameReplacement(text, true);
 }
 
+
 void CGHeroInstance::spendMana(ServerCallback * server, const int spellCost) const
 {
+	logGlobal->error("CGHeroInstance::spendMana");
+
+	const bool someSpecificBonus = hasBonusOfType(Bonus::SPELL, -1);
+
 	if(spellCost != 0)
 	{
 		SetMana sm;
 		sm.absolute = false;
 		sm.hid = id;
-		sm.val = -spellCost;
+		if(someSpecificBonus && firstCast)
+		{
+			sm.val = 0;
+		}
+		else
+		{
+			sm.val = -spellCost;
+		}
+		sm.firstCast = false;
 
 		server->apply(&sm);
 	}
@@ -741,6 +755,7 @@ bool CGHeroInstance::canCastThisSpell(const spells::Spell * spell) const
 
 	const bool inSpellBook = vstd::contains(spells, spell->getId()) && hasSpellbook();
 	const bool specificBonus = hasBonusOfType(Bonus::SPELL, spell->getIndex());
+	
 
 	bool schoolBonus = false;
 

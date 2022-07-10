@@ -56,7 +56,6 @@ public:
 	mutable ui8 isStanding, tacticFormationEnabled;
 
 	//////////////////////////////////////////////////////////////////////////
-
 	ConstTransitivePtr<CHero> type;
 	TExpType exp; //experience points
 	ui32 level; //current level of hero
@@ -64,6 +63,7 @@ public:
 	std::string biography; //if custom
 	si32 portrait; //may be custom
 	si32 mana; // remaining spell points
+	bool firstCast;
 	std::vector<std::pair<SecondarySkill,ui8> > secSkills; //first - ID of skill, second - level of skill (1 - basic, 2 - adv., 3 - expert); if hero has ability (-1, -1) it meansthat it should have default secondary abilities
 	ui32 movement; //remaining movement points
 	ui8 sex;
@@ -123,6 +123,7 @@ public:
 		mutable CRandomGenerator rand;
 		ui8 magicSchoolCounter;
 		ui8 wisdomCounter;
+		bool some;
 
 		SecondarySkillsInfo();
 
@@ -149,8 +150,7 @@ public:
 	int getBoatType() const override; //0 - evil (if a ship can be evil...?), 1 - good, 2 - neutral
 	void getOutOffsets(std::vector<int3> &offsets) const override; //offsets to obj pos when we boat can be placed
 
-	//////////////////////////////////////////////////////////////////////////
-
+	//////////////////////////////////////////////////////////////////////////	
 	bool hasSpellbook() const;
 	int maxSpellLevel() const;
 	void addSpellToSpellbook(SpellID spell);
@@ -172,8 +172,7 @@ public:
 	int32_t getSpellCost(const spells::Spell * sp) const; //do not use during battles -> bonuses from army would be ignored
 
 	bool canLearnSpell(const spells::Spell * spell) const;
-	bool canCastThisSpell(const spells::Spell * spell) const; //determines if this hero can cast given spell; takes into account existing spell in spellbook, existing spellbook and artifact bonuses
-
+	bool canCastThisSpell(const spells::Spell * spell) const; //determines if this hero can cast given spell; takes into account existing spell in spellbook, existing spellbook and artifact bonuses    
 
 	// ----- primary and secondary skill, experience, level handling -----
 
@@ -330,4 +329,5 @@ public:
 		if(version < 777 && !h.saving)
 			recreateSecondarySkillsBonuses();
 	}
+
 };
