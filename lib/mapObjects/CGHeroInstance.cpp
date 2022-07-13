@@ -728,22 +728,23 @@ void CGHeroInstance::spendMana(ServerCallback * server, const int spellCost) con
 {
 	logGlobal->error("CGHeroInstance::spendMana");
 
-	const bool someSpecificBonus = hasBonusOfType(Bonus::SPELL, -1);
+	//const bool someSpecificBonus = hasBonusOfType(Bonus::SPELL, -1);
 
 	if(spellCost != 0)
 	{
 		SetMana sm;
 		sm.absolute = false;
 		sm.hid = id;
-		if(someSpecificBonus && firstCast)
+		if (spellCost > 1000)
 		{
+			sm.spId = spellCost - 1000;
 			sm.val = 0;
 		}
 		else
 		{
-			sm.val = -spellCost;
+		    sm.val = -spellCost;
+			sm.spId = 0;
 		}
-		sm.firstCast = false;
 
 		server->apply(&sm);
 	}

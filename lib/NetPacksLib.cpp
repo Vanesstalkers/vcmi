@@ -156,8 +156,12 @@ DLL_LINKAGE void SetMana::applyGs(CGameState *gs)
 		hero->mana = val;
 	else
 		hero->mana += val;
-
-    hero->firstCast = firstCast;
+    
+	if(spId == -1)
+        hero->battleBonus.clear();
+	if(spId > 0)
+	    hero->battleBonus.insert(std::pair<int,int>(spId,1));
+	
 	vstd::amax(hero->mana, 0); //not less than 0
 }
 

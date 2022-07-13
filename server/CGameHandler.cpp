@@ -2736,7 +2736,7 @@ void CGameHandler::startBattlePrimary(const CArmedInstance *army1, const CArmedI
 	    sm.absolute = false;
 	    sm.hid = hero1->id;
 	    sm.val = 0;
-	    sm.firstCast = true;	
+	    sm.spId = -1;	
 
 	    sendAndApply(&sm);
 	}
@@ -2747,7 +2747,7 @@ void CGameHandler::startBattlePrimary(const CArmedInstance *army1, const CArmedI
 	    sm1.absolute = false;
 	    sm1.hid = hero2->id;
 	    sm1.val = 0;
-	    sm1.firstCast = true;
+	    sm1.spId = -1;
 
 	    sendAndApply(&sm1);
 	}
@@ -3093,6 +3093,18 @@ bool CGameHandler::bulkMergeStacks(SlotID slotSrc, ObjectInstanceID srcOwner)
 	logGlobal->error("CGameHandler::bulkMergeStacks");
 	if(!slotSrc.validSlot() && complain(complainInvalidSlot))
 		return false;
+
+
+    PlayerColor thePlayer = gs->currentPlayer;
+
+    const PlayerState * pinfo = getPlayerState(thePlayer, false);
+	if(pinfo->human)
+	{
+        logGlobal->error("Human cant use this trick!");
+		return false;
+	}
+
+
 
 	const CArmedInstance * army = static_cast<const CArmedInstance*>(getObjInstance(srcOwner));
 	const CCreatureSet & creatureSet = *army;

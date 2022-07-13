@@ -184,6 +184,12 @@ const StartInfo * CGameInfoCallback::getStartInfo(bool beforeRandomization) cons
 
 int32_t CGameInfoCallback::getSpellCost(const spells::Spell * sp, const CGHeroInstance * caster) const
 {
+	std::map<int, int> someMap;
+	someMap = caster->battleBonus;
+
+	if (caster->hasBonusOfType(Bonus::SPELL, sp->getIndex()) && ( someMap.empty() || (someMap.find(sp->getIndex()) == someMap.end())))
+	    return 0;
+	
 	//boost::shared_lock<boost::shared_mutex> lock(*gs->mx);
 	ERROR_RET_VAL_IF(!canGetFullInfo(caster), "Cannot get info about caster!", -1);
 	//if there is a battle

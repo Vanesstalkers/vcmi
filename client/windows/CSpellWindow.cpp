@@ -105,8 +105,22 @@ CSpellWindow::CSpellWindow(const CGHeroInstance * _myHero, CPlayerInterface * _m
 	OBJECT_CONSTRUCTION_CAPTURING(255-DISPOSE);
 	//initializing castable spells
 	mySpells.reserve(CGI->spellh->objects.size());
+
+	std::map<int, int> someMap;
+	someMap = myHero->battleBonus;
+
 	for(const CSpell * spell : CGI->spellh->objects)
 	{
+	    if (myHero->spellbookContainsSpell(spell->getId()))
+		{
+			logGlobal->error("IN BOOK!!!");
+		}
+		
+		if (myHero->hasBonusOfType(Bonus::SPELL, spell->getIndex()) && someMap.find(spell->getIndex()) != someMap.end())
+		{
+			if(!myHero->spellbookContainsSpell(spell->getId()))
+		        continue;
+		}
 		if(!spell->isCreatureAbility() && myHero->canCastThisSpell(spell))
 			mySpells.push_back(spell);
 	}

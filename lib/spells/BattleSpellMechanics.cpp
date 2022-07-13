@@ -246,9 +246,12 @@ void BattleSpellMechanics::cast(ServerCallback * server, const Target & target)
 	BattleSpellCast sc;
 
 	int spellCost = 0;
+	SpellID theSpellId;
 
 	sc.side = casterSide;
 	sc.spellID = getSpellId();
+	theSpellId = sc.spellID;
+	
 	sc.tile = target.at(0).hexValue;
 
 	sc.castByHero = mode == Mode::HERO;
@@ -271,7 +274,17 @@ void BattleSpellMechanics::cast(ServerCallback * server, const Target & target)
 	if(mode == Mode::HERO)
 	{
 		auto casterHero = dynamic_cast<const CGHeroInstance *>(caster);
-		spellCost = battle()->battleGetSpellCost(owner, casterHero);
+		
+		std::map<int, int> someMap;
+		someMap = casterHero->battleBonus;
+
+		if(casterHero->hasBonusOfType(Bonus::SPELL, sc.spellID) && ( someMap.empty() || ( someMap.find(sc.spellID) == someMap.end())))
+		{
+			logGlobal->error("SPELL COST 0");
+			spellCost = 0;
+		}
+		else
+		    spellCost = battle()->battleGetSpellCost(owner, casterHero);
 
 		if(nullptr != otherHero) //handle mana channel
 		{
@@ -332,12 +345,15 @@ void BattleSpellMechanics::cast(ServerCallback * server, const Target & target)
 
 	if(sc.activeCast)
 	{
-		caster->spendMana(server, spellCost);
+		if (spellCost > 0)
+		    caster->spendMana(server, spellCost);
+		else
+		    caster->spendMana(server, theSpellId + 1000);
 
 		if(sc.manaGained > 0)
 		{
 			assert(otherHero);
-			otherHero->spendMana(server, -sc.manaGained);
+            otherHero->spendMana(server, -sc.manaGained);
 		}
 	}
 }
